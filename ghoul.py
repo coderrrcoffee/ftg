@@ -15,7 +15,7 @@ class GULMod(loader.Module):
     'iamghoul': "Я - недогуль!"}
     
     async def гульcmd(self, message):
-        x = 1000
+        x = 1414
         emojies = ["[Я ГУЛЬ!] ", "[ГУЛЬГУЛЬГУЛЬ] ", "[Я ЗАГУЛИЛСЯ] ", "[ТЫ ГУЛЬ!] ", "[ГУЛЬ СДОХ] "]
         await message.edit(self.strings('iamghoul', message))
         await sleep(2)
