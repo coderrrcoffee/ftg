@@ -1,3 +1,21 @@
+"""
+    Copyright 2021 t.me/innocoffee
+    Licensed under the Apache License, Version 2.0
+    
+    Author is not responsible for any consequencies caused by using this
+    software or any of its parts. If you have any questions or wishes, feel
+    free to contact Dan by sending pm to @innocoffee_alt.
+"""
+
+"""
+    Edit in 2022 by t.me/Gleb_Gleb1
+    Licensed under the Apache License, Version 2.0
+    
+    Author is not responsible for any consequencies caused by using this
+    software or any of its parts. If you have any questions or wishes, feel
+    free to contact me @Gleb_Gleb1.
+"""
+
 #<3 title: NedoGhoul
 #<3 pic: https://img.icons8.com/fluency/48/000000/dota.png
 #<3 desc: Покажет участникам чата, что ты - гуль!
