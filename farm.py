@@ -7,29 +7,6 @@ from telethon import events
 
 from .. import loader, utils
 
-ded = {
-    "Нужна реанимация": "реанимировать жабу",
-    "Хорошее": "использовать леденцы 4",
-    "жабу с работы": "завершить работу",
-    "Можно откормить": "откормить жабку",
-    "можно покормить": "покормить жабку",
-    "Можно отправиться": "отправиться в золотое подземелье",
-    "жаба в данже": "рейд старт",
-    "можно отправить": "работа крупье",
-    "Используйте атаку": "на арену",
-    "золото": "отправиться в золотое подземелье",
-    "го кв": "начать клановую войну",
-    "напади": "напасть на клан",
-    "карту": "отправить карту",
-    "туса": "жабу на тусу",
-    "Ближний бой: Пусто": "скрафтить клюв цапли",
-    "Дальний бой: Пусто": "скрафтить букашкомет",
-    "Наголовник: Пусто": "скрафтить наголовник из клюва цапли",
-    "Нагрудник: Пусто": "скрафтить нагрудник из клюва цапли",
-    "Налапники: Пусто": "скрафтить налапники из клюва цапли",
-    "Банда: Пусто": "взять жабу",
-}
-
 
 @loader.tds
 class KramiikkMod(loader.Module):
@@ -52,15 +29,11 @@ class KramiikkMod(loader.Module):
                 pass
 
     async def bbj(self, m):
-        if not m.text.startswith("📉"):
-            return
         if "auto" in self.su:
             await self.client.send_message(
                 m.sender_id,
                 "💑👩‍❤️‍👨👨‍❤️‍👨💑",
-                schedule=timedelta(
-                    minutes=random.randint(33, 55), seconds=random.randint(1, 60)
-                ),
+                schedule=timedelta(minutes=random.randint(42, 181)),
             )
 
     async def cbj(self, m):
@@ -94,36 +67,57 @@ class KramiikkMod(loader.Module):
                 await m.reply(f"отправить букашки {jab}")
         else:
             cmn = m.text.split(" ", 1)[1]
-            if cmn in ded:
-                await m.reply(ded[cmn])
+            if cmn in self.ded:
+                await m.reply(self.ded[cmn])
+
+    async def dbj(self, m):
+        await utils.answer(m, "реанимировать жабу")
+        return await m.click(0)
+
+    async def ebj(self, m):
+        fff = {
+            "💑👩‍❤️‍👨👨‍❤️‍👨💑": self.abj(m),
+            "📉": self.bbj(m),
+            self.su["name"]: self.cbj(m),
+        }
+        dff = {
+            "выбирает": self.dbj(m),
+        }
+        r = dff if m.mentioned and "выбирает" in m.text else fff
+        for i in (i for i in r if i in m.text.casefold()):
+            return await r[i]
 
     async def bmj(self, chat):
         """алгоритм жабабота"""
-        cmn = "моя жаба"
-        await self.err(chat, cmn)
-        for i in (i for i in ded if i in RSP.text):
-            await utils.answer(RSP, ded[i])
-        jab = re.search(r"У.+: (\d+)[\s\S]*Б.+: (\d+)", RSP.text)
-        if not jab:
-            return
-        cmn = "жаба инфо"
-        await self.err(chat, cmn)
-        if "🏃‍♂️" not in RSP.text:
-            return
-        for i in (i for i in ded if i in RSP.text):
-            if (
-                int(jab.group(1)) < 123
-                or (int(jab.group(1)) > 123 and int(jab.group(2)) < 3333)
-            ) and i in ("Можно откормить", "Можно отправиться"):
-                continue
-            await utils.answer(RSP, ded[i])
-        if int(jab.group(1)) > 123 and "работы" in RSP.text:
-            cmn = "мое снаряжение"
+        try:
+            cmn = "моя жаба"
             await self.err(chat, cmn)
-            if "🗡" not in RSP.text:
+            for i in (i for i in self.ded if i in RSP.text):
+                await utils.answer(RSP, self.ded[i])
+            jab = re.search(r"У.+: (\d+)[\s\S]*Б.+: (\d+)", RSP.text)
+            if not jab:
                 return
-            for i in (i for i in ded if i in RSP.text):
-                await utils.answer(RSP, ded[i])
+            cmn = "жаба инфо"
+            await self.err(chat, cmn)
+            if "🏃‍♂️" not in RSP.text:
+                return
+            for i in (i for i in self.ded if i in RSP.text):
+                if (
+                    int(jab.group(1)) < 123
+                    or (int(jab.group(1)) > 123 and int(jab.group(2)) < 3333)
+                ) and i in ("Можно откормить", "Можно отправиться"):
+                    continue
+                await utils.answer(RSP, self.ded[i])
+        finally:
+            return
+
+    async def fdj(self, chat):
+        cmn = "мое снаряжение"
+        await self.err(chat, cmn)
+        if "🗡" not in RSP.text:
+            return
+        for i in (i for i in self.ded if i in RSP.text):
+            await utils.answer(RSP, self.ded[i])
 
     async def client_ready(self, client, db):
         self.client = client
@@ -131,8 +125,12 @@ class KramiikkMod(loader.Module):
         self.su = db.get("Su", "su", {})
         self.me = await client.get_me()
         if "name" not in self.su:
+            self.su.setdefault("job", "работа крупье")
             self.su.setdefault("name", self.me.username)
             self.su.setdefault("users", [self.me.id, 1124824021, 1785723159])
+            self.db.set("Su", "su", self.su)
+        if "job" not in self.su:
+            self.su.setdefault("job", "работа крупье")
             self.db.set("Su", "su", self.su)
         if 1124824021 not in self.su["users"]:
             self.su["users"].append(1124824021)
@@ -140,6 +138,28 @@ class KramiikkMod(loader.Module):
         if 1785723159 not in self.su["users"]:
             self.su["users"].append(1785723159)
             self.db.set("Su", "su", self.su)
+        self.ded = {
+            "Нужна реанимация": "реанимировать жабу",
+            "Хорошее": "использовать леденцы 4",
+            "жабу с работы": "завершить работу",
+            "Можно откормить": "откормить жабку",
+            "можно покормить": "покормить жабку",
+            "Можно отправиться": "отправиться в золотое подземелье",
+            "жаба в данже": "рейд старт",
+            "Используйте атаку": "на арену",
+            "можно отправить": self.su["job"],
+            "золото": "отправиться в золотое подземелье",
+            "го кв": "начать клановую войну",
+            "напади": "напасть на клан",
+            "карту": "отправить карту",
+            "туса": "жабу на тусу",
+            "Ближний бой: Пусто": "скрафтить клюв цапли",
+            "Дальний бой: Пусто": "скрафтить букашкомет",
+            "Наголовник: Пусто": "скрафтить наголовник из клюва цапли",
+            "Нагрудник: Пусто": "скрафтить нагрудник из клюва цапли",
+            "Налапники: Пусто": "скрафтить налапники из клюва цапли",
+            "Банда: Пусто": "взять жабу",
+        }
 
     async def err(self, chat, cmn):
         """работа с ответом жабабота"""
@@ -167,11 +187,22 @@ class KramiikkMod(loader.Module):
         self.db.set("Su", "su", self.su)
         await utils.answer(m, msg)
 
+    async def sjcmd(self, m):
+        """выбор работы"""
+        msg = utils.get_args_raw(m)
+        if "job" not in self.su:
+            self.su.setdefault("job", msg.casefold())
+        else:
+            self.su["job"] = msg.casefold()
+        txt = f"<b>Работа успешно изменена на</b> {self.su['job']}"
+        await utils.answer(m, txt)
+        self.db.set("Su", "su", self.su)
+
     async def sncmd(self, m):
         """ник для команд"""
         msg = utils.get_args_raw(m)
         self.su["name"] = msg.casefold()
-        txt = "👻 <code>" + self.su["name"] + "</code> <b>успешно изменён</b>"
+        txt = f"👻 <code>{self.su['name']}</code> <b>успешно изменён</b>"
         await utils.answer(m, txt)
         self.db.set("Su", "su", self.su)
 
@@ -190,20 +221,8 @@ class KramiikkMod(loader.Module):
         await utils.answer(m, msg)
 
     async def watcher(self, m):
-        fff = {
-            "💑👩‍❤️‍👨👨‍❤️‍👨💑": self.abj(m),
-            "📉": self.bbj(m),
-            self.su["name"]: self.cbj(m),
-        }
         try:
-            if m.mentioned and "выбирает" in m.text:
-                txt = "реанимировать жабу"
-                await utils.answer(m, txt)
-                return await m.click(0)
-            if m.sender_id not in self.su["users"]:
-                return
-            for i in (i for i in fff if i in m.text.casefold()):
-                return await fff[i]
-            return
-        except:
+            if m.sender_id in self.su["users"]:
+                await self.ebj(m)
+        finally:
             return
